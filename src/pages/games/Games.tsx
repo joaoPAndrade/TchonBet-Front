@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { AuthDrawer } from "../auth/AuthDrawer";
@@ -66,6 +66,11 @@ export const GamesPage = () => {
         setIsSidebarOpen(false);
     };
 
+    // Check user role from localStorage
+    const userName = localStorage.getItem("userName");
+    const hasUser = (userName !== null);
+    const isAdmin = userName === "admin"; // Only show buttons for 'admin'
+
     return (
         <>
             <Navbar onOpenLogin={() => setIsLoginOpen(true)} onOpenPayment={() => setPaymentOpen(true)} />
@@ -76,18 +81,24 @@ export const GamesPage = () => {
                         <h1 className="text-4xl font-bold bg-gradient-to-r from-[#F596D3] to-[#D247BF] text-transparent bg-clip-text">
                             Jogos Disponíveis
                         </h1>
-                        <Button onClick={() => setIsSidebarOpen(true)}>Adicionar Jogo</Button>
+                        {isAdmin && (
+                            <Button onClick={() => setIsSidebarOpen(true)}>Adicionar Jogo</Button>
+                        )}
                     </div>
                     {mockGames.map((game, index) => (
                         <div key={game.id}>
                             <div className="flex justify-between items-center py-3">
                                 <div className="flex gap-6 font-extrabold text-lg">
-                                    <Button variant="outline" onClick={() => handleEditWinner(game)}>Editar</Button> {/* Modified button */}
+                                    {isAdmin && (
+                                        <Button variant="outline" onClick={() => handleEditWinner(game)}>Editar</Button>
+                                    )}
                                     {game.teamA} <span className="text-green-500">🔥 {game.oddA}x</span> vs
                                     <span className="text-red-500">🔥 {game.oddB}x</span> {game.teamB}
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button variant="default" onClick={() => handleBet()}>Apostar</Button>
+                                    {hasUser && (
+                                        <Button variant="default" onClick={() => handleBet()}>Apostar</Button>
+                                    )}
                                 </div>
                             </div>
                             <hr className="border-gray-300 dark:border-gray-700" />
