@@ -23,7 +23,7 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
         <img
           src={tchonBet}
           alt="Tchon Bet"
-          className="w-80 h-65 object-cover rounded-l-xl"
+          className="w-70 h-50 object-cover rounded-l-xl"
         />
         <br></br>
         <SheetHeader>
@@ -49,9 +49,7 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
           </div>
 
           {/* Formulário Base */}
-          <Input placeholder="Nome" />
-          <Input placeholder="Email" />
-          <Input placeholder="CPF" />
+          <Input placeholder="Valor R$" />
 
           {/* Formulário específico para Pix */}
           {paymentMethod === "pix" && (
