@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Check } from "lucide-react";
 import tchonBet from "./images/tchonBet.png";
+import { Link } from "react-router-dom";
 
 export const MainCard = () => {
   return (
@@ -42,7 +43,9 @@ export const MainCard = () => {
           </CardHeader>
 
           <CardContent>
-            <Button className="w-full">Quero apostar na TchonBet!</Button>
+            <Link to={"/apostar"}>
+              <Button className="w-full">Quero apostar na TchonBet!</Button>
+            </Link>
           </CardContent>
 
           <hr className="w-4/5 m-auto mb-4" />
