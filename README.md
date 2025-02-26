@@ -10,7 +10,7 @@ Build your React landing page effortlessly with the required sections to your pr
 
 - [x] Navbar
 - [x] Sidebar(mobile)
-- [x] Hero
+- [x] MainText
 - [x] Sponsors
 - [x] About
 - [x] Stats

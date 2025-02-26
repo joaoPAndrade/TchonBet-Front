@@ -1,6 +1,6 @@
-import { HeroCards } from "./HeroCards";
+import { MainCard } from "./MainCard";
 
-export const Hero = () => {
+export const MainText = () => {
   return (
     <section className="container grid lg:grid-cols-2 place-items-center py-20 md:py-32 gap-10">
       <div className="text-center lg:text-start space-y-6">
@@ -9,7 +9,7 @@ export const Hero = () => {
             <span className="inline bg-gradient-to-r from-[#F596D3]  to-[#D247BF] text-transparent bg-clip-text">
               TchonBet
             </span>{" "}
-            landing page
+            <br></br>
           </h1>{" "}
           Solta a {" "}
           <h2 className="inline">
@@ -26,9 +26,9 @@ export const Hero = () => {
 
       </div>
 
-      {/* Hero cards sections */}
+      {/* MainText cards sections */}
       <div className="z-10">
-        <HeroCards />
+        <MainCard />
       </div>
 
       {/* Shadow effect */}

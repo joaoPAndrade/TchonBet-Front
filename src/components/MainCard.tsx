@@ -11,7 +11,7 @@ import {
 import { Check } from "lucide-react";
 import tchonBet from "./images/tchonBet.png";
 
-export const HeroCards = () => {
+export const MainCard = () => {
   return (
     <div className="hidden lg:flex flex-row flex-wrap gap-8 relative w-[800px] h-[500px]">
       {/* Pricing */}

@@ -2,7 +2,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* HeroCards background shadow */
+/* MainCard background shadow */
 .shadow {
   position: absolute;
   background: hsl(var(--primary) / 0%);

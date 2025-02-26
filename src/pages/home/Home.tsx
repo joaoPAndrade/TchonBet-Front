@@ -1,23 +1,26 @@
+import { useState } from "react";
 import { FAQ } from "../../components/FAQ";
 import { Footer } from "../../components/Footer";
-import { Hero } from "../../components/Hero";
+import { MainText } from "../../components/MainText";
 import { HowItWorks } from "../../components/HowItWorks";
 import { Navbar } from "../../components/Navbar";
 import { ScrollToTop } from "../../components/ScrollToTop";
-import { Sponsors } from "../../components/Sponsors";
+import { AuthDrawer } from "../auth/AuthDrawer";
 
 export const Home = () => {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
   return (
     <>
-      <Navbar />
-      <Hero />
-      <Sponsors />
+      <Navbar onOpenLogin={() => setIsLoginOpen(true)} />
+      <MainText />
       <HowItWorks />
       <FAQ />
       <Footer />
       <ScrollToTop />
+      <AuthDrawer isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </>
   );
-}
+};
 
 export default Home;
