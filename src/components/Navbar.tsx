@@ -20,6 +20,7 @@ import Icon from "@mdi/react";
 import Wallet from "./Wallet";
 import { mdiRabbit } from "@mdi/js";
 import { Coins } from "lucide-react";
+import { useUserStorage } from "@/store/UserStorage";
 
 interface NavbarProps {
   onOpenLogin: () => void;
@@ -28,6 +29,7 @@ interface NavbarProps {
 
 export const Navbar = ({ onOpenLogin, onOpenPayment }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { user } = useUserStorage(); // Pegue o estado do usuário
 
   return (
     <header className="sticky border-b-[1px] top-0 z-40 w-full bg-white dark:border-b-slate-700 dark:bg-background">
@@ -48,19 +50,18 @@ export const Navbar = ({ onOpenLogin, onOpenPayment }: NavbarProps) => {
           {/* Itens de navegação centralizados */}
           <div className="hidden md:flex gap-8 text-lg font-medium">
             <a href="/apostar" className="hover:underline">Apostar</a>
-            <a href="/minhas-apostas" className="hover:underline">Minhas Apostas</a>
-            <a href="/perfil" className="hover:underline">Perfil</a>
+            {user && <a href="/minhas-apostas" className="hover:underline">Minhas Apostas</a>}
+            {user && <a href="/perfil" className="hover:underline">Perfil</a>}
           </div>
-
 
           {/* Botões à direita */}
           <div className="hidden md:flex gap-4 items-center">
-            <Wallet onOpenPayment={() => onOpenPayment()}/>
+            {/* Exibe o Wallet apenas se o usuário estiver logado */}
+            {user && <Wallet onOpenPayment={() => onOpenPayment()} />}
 
             <button onClick={onOpenLogin} className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default", })}`}>
               Login
             </button>
-
 
             <ModeToggle />
           </div>
@@ -86,10 +87,11 @@ export const Navbar = ({ onOpenLogin, onOpenPayment }: NavbarProps) => {
 
                 <nav className="flex flex-col justify-center items-center gap-4 mt-4">
                   <a href="/apostar" className="text-lg font-medium">Apostar</a>
-                  <a href="/minhas-apostas" className="text-lg font-medium">Minhas Apostas</a>
-                  <a href="/perfil" className="text-lg font-medium">Perfil</a>
+                  {user &&  <a href="/minhas-apostas" className="text-lg font-medium">Minhas Apostas</a>}
+                  {user && <a href="/perfil" className="text-lg font-medium">Perfil</a>}
 
-                  <Wallet onOpenPayment={() => onOpenPayment()}/>
+                  {/* Exibe o Wallet apenas se o usuário estiver logado */}
+                  {user && <Wallet onOpenPayment={() => onOpenPayment()} />}
 
                   <button onClick={onOpenLogin} className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default", })}`}>
                     Login

@@ -1,12 +1,12 @@
 import axios from "axios";
 import { User } from "src/models/UserModel";
 
-const API_URL = "http://localhost:3000/api/users";
+const API_URL = "http://localhost:3000/users";
 
 class UserService {
     async createUser(user: User) {
         try {
-            const response = await axios.post(`${API_URL}/create`, user);
+            const response = await axios.post(`${API_URL}`, user);
             return response.data;
         } catch (error: any) {
             throw new Error(error.response?.data?.message || "Erro ao criar usuário");
@@ -15,7 +15,7 @@ class UserService {
 
     async updateUser(user: User) {
         try {
-            const response = await axios.put(`${API_URL}/update/${user.id}`, user);
+            const response = await axios.put(`${API_URL}/${user.id}`, user);
             return response.data;
         } catch (error: any) {
             throw new Error(error.response?.data?.message || "Erro ao atualizar usuário");
@@ -24,7 +24,7 @@ class UserService {
 
     async authenticateUser(username: string, password: string) {
         try {
-            const response = await axios.post(`${API_URL}/login`, { username, password });
+            const response = await axios.post(`${API_URL}/auth/login`, { username, password });
             return response.data;
         } catch (error: any) {
             throw new Error(error.response?.data?.message || "Erro ao autenticar usuário");
