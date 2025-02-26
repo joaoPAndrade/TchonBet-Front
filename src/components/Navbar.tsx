@@ -17,14 +17,16 @@ import { buttonVariants } from "./ui/button";
 import { Menu } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
 import Icon from "@mdi/react";
+import Wallet from "./Wallet";
 import { mdiRabbit } from "@mdi/js";
-import { Wallet } from "lucide-react";
+import { Coins } from "lucide-react";
 
 interface NavbarProps {
   onOpenLogin: () => void;
+  onOpenPayment: () => void;
 }
 
-export const Navbar = ({ onOpenLogin }: NavbarProps) => {
+export const Navbar = ({ onOpenLogin, onOpenPayment }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
@@ -53,25 +55,12 @@ export const Navbar = ({ onOpenLogin }: NavbarProps) => {
 
           {/* Botões à direita */}
           <div className="hidden md:flex gap-4 items-center">
-            <a
-              rel="noreferrer noopener"
-              target="_blank"
-              className={`w-[110px] border ${buttonVariants({
-                variant: "secondary",
-              })}`}
-            >
-              <Wallet className="mr-2 w-5 h-5" />
-              Carteira
-            </a>
+            <Wallet onOpenPayment={() => onOpenPayment()}/>
 
-            <button
-              onClick={onOpenLogin}
-              className={`border px-4 py-2 rounded-md ${buttonVariants({
-                variant: "default",
-              })}`}
-            >
+            <button onClick={onOpenLogin} className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default", })}`}>
               Login
             </button>
+
 
             <ModeToggle />
           </div>
@@ -100,24 +89,9 @@ export const Navbar = ({ onOpenLogin }: NavbarProps) => {
                   <a href="/minhas-apostas" className="text-lg font-medium">Minhas Apostas</a>
                   <a href="/perfil" className="text-lg font-medium">Perfil</a>
 
-                  <a
-                    rel="noreferrer noopener"
-                    href="https://github.com/joaoPAndrade/TchonBet-Front"
-                    target="_blank"
-                    className={`w-[110px] border ${buttonVariants({
-                      variant: "secondary",
-                    })}`}
-                  >
-                    <Wallet className="mr-2 w-5 h-5" />
-                    Github
-                  </a>
+                  <Wallet onOpenPayment={() => onOpenPayment()}/>
 
-                  <button
-                    onClick={onOpenLogin}
-                    className={`border px-4 py-2 rounded-md w-full ${buttonVariants({
-                      variant: "default",
-                    })}`}
-                  >
+                  <button onClick={onOpenLogin} className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default", })}`}>
                     Login
                   </button>
                 </nav>

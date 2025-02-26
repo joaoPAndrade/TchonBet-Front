@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import tchonBet from "@/components/images/tchonBetDinheiro.png";
+import tchonBet from "@/components/images/tchonBet.png";
 
 interface AuthDrawerProps {
   isOpen: boolean;
@@ -20,6 +20,14 @@ export const AuthDrawer = ({ isOpen, onClose }: AuthDrawerProps) => {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="right">
+        <main className="text-5xl md:text-5xl font-bold">
+          <h1>
+            <span className="inline bg-gradient-to-r from-[#F596D3]  to-[#D247BF] text-transparent bg-clip-text">
+              TchonBet
+            </span>{" "}
+            <br></br>
+          </h1>{" "}
+        </main>
         <img
           src={tchonBet}
           alt="Tchon Bet"
