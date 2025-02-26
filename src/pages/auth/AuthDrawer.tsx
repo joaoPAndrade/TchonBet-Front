@@ -41,7 +41,7 @@ export const AuthDrawer = ({ isOpen, onClose }: AuthDrawerProps) => {
           {isRegister && <Input placeholder="Nome" />}
           <Input placeholder="Email" />
           {isRegister && <Input placeholder="CPF" />}
-          {isRegister && <Input placeholder="CEP" />}
+          {isRegister && <Input name="data" placeholder="Data de Nascimento" type="date"/>}
           <Input placeholder="Senha" type="password" />
           {isRegister && <Input placeholder="Confirme a senha" type="password" />}
 
@@ -50,7 +50,7 @@ export const AuthDrawer = ({ isOpen, onClose }: AuthDrawerProps) => {
           </Button>
 
           <button
-            className="text-sm text-blue-500 w-full"
+            className="text-sm text-pink-500 w-full"
             onClick={() => setIsRegister(!isRegister)}
           >
             {isRegister ? "Já tem uma conta? Faça login" : "Criar uma conta"}
