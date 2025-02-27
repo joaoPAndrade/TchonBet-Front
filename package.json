@@ -3,9 +3,7 @@
   "type": "module",
   "description": "Landing page template utilizing Shadcn, React, Typescript, and Tailwind CSS for rapid development and responsive design.",
   "author": {
-    "name": "Leopoldo Miranda",
-    "email": "leomirandadev@gmail.com",
-    "url": "https://github.com/leoMirandaa"
+    "name": "Felipe Medici"
   },
   "license": "MIT",
   "keywords": [
