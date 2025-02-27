@@ -15,7 +15,7 @@ class GameService {
 
     async updateGameStatus(gameId: number, team: string) {
         try {
-            const response = await axios.put(`${API_URL}/finish/${gameId}`, team);
+            const response = await axios.put(`${API_URL}/finish/${gameId}`, {"team": team});
             return response.data;
         } catch (error: any) {
             throw new Error(error.response?.data?.message || "Erro ao atualizar um jogo");
