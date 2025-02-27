@@ -5,7 +5,6 @@ import { AuthDrawer } from "../auth/AuthDrawer";
 import { PaymentDrawer } from "../payment/Payment";
 import esportsImg from "@/components/images/esports.jpg";
 import { Game } from "@/models/GameModel";
-
 import {
     Sheet,
     SheetContent,
@@ -14,36 +13,90 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { useUserStorage } from "@/store/UserStorage";
-
-const mockGames: Game[] = [
-    { id: 1, teamA: "Time A", teamB: "Time B", oddA: 2.0, oddB: 4.5, date: "2025-03-01", isFinished: false, winnerTeam: "false" },
-    { id: 2, teamA: "Time C", teamB: "Time D", oddA: 1.8, oddB: 5.0, date: "2025-03-02", isFinished: false, winnerTeam: "false" },
-    { id: 3, teamA: "Time E", teamB: "Time F", oddA: 2.2, oddB: 3.9, date: "2025-03-03", isFinished: false, winnerTeam: "false" },
-];
+import GameService from "@/services/GameService";
 
 export const GamesPage = () => {
+    // Estados para controle de UI
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isPaymentOpen, setPaymentOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isBettingOpen, setIsBettingOpen] = useState(false);
-    const [isEditWinnerOpen, setIsEditWinnerOpen] = useState(false); // New state for edit winner popup
+    const [isEditWinnerOpen, setIsEditWinnerOpen] = useState(false);
+
+    // Estados para apostas e vencedores
     const [selectedBet, setSelectedBet] = useState<"teamA" | "teamB" | "none">("none");
-    const [selectedWinner, setSelectedWinner] = useState<"teamA" | "teamB" | "none">("none"); // Track selected winner
+    const [selectedWinner, setSelectedWinner] = useState<"teamA" | "teamB" | "none">("none");
+    const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+
+    // Estado para adicionar/editar jogos
     const [newGame, setNewGame] = useState({ teamA: "", teamB: "", oddA: "", oddB: "", data: "" });
 
+    // Estado para armazenar a lista de jogos
+    const [games, setGames] = useState<Game[]>([]);
+
+    // Obter o usuário atual
+    const { user } = useUserStorage();
+
+    // Buscar jogos ao carregar a página
+    useEffect(() => {
+        const fetchGames = async () => {
+            try {
+                const games = await GameService.getAllGames();
+                setGames(games);
+            } catch (error) {
+                console.error("Erro ao buscar jogos:", error);
+            }
+        };
+
+        fetchGames();
+    }, []);
+
+    // Função para lidar com mudanças nos inputs do formulário
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewGame({ ...newGame, [e.target.name]: e.target.value });
     };
 
-    const handleEditWinner = (game: Game) => {
-        setSelectedWinner(game.winnerTeam === "false" ? "none" : game.winnerTeam as "teamA" | "teamB");
-        setIsEditWinnerOpen(true); // Open winner edit popup
+    // Função para adicionar ou editar um jogo
+    const handleAddGame = async () => {
+        try {
+            const game = await GameService.createGame(newGame);
+            setGames([...games, game]);
+            setIsSidebarOpen(false);
+            setNewGame({ teamA: "", teamB: "", oddA: "", oddB: "", data: "" }); // Limpar o formulário
+        } catch (error) {
+            console.error("Erro ao adicionar jogo:", error);
+        }
     };
 
+    // Função para abrir o pop-up de edição de vencedor
+    const handleEditWinner = (game: Game) => {
+        setSelectedGame(game);
+        setSelectedWinner(game.winnerTeam === "false" ? "none" : game.winnerTeam as "teamA" | "teamB");
+        setIsEditWinnerOpen(true);
+    };
+
+    // Função para confirmar o vencedor
+    const handleConfirmWinner = async () => {
+        if (selectedWinner === "none" || !selectedGame) {
+            alert("Selecione um time vencedor!");
+            return;
+        }
+
+        try {
+            const updatedGame = await GameService.updateGameStatus(selectedGame.id, selectedWinner);
+            setGames(games.map(g => g.id === updatedGame.id ? updatedGame : g));
+            setIsEditWinnerOpen(false);
+        } catch (error) {
+            console.error("Erro ao atualizar o vencedor:", error);
+        }
+    };
+
+    // Função para lidar com a aposta
     const handleBet = () => {
         setIsBettingOpen(true);
     };
 
+    // Função para confirmar a aposta
     const handleConfirmBet = () => {
         if (selectedBet === "none") {
             alert("Selecione um time para apostar!");
@@ -53,27 +106,12 @@ export const GamesPage = () => {
         setIsBettingOpen(false);
     };
 
-    const handleConfirmWinner = () => {
-        if (selectedWinner === "none") {
-            alert("Selecione um time vencedor!");
-            return;
-        }
-        console.log(`Time vencedor confirmado: ${selectedWinner === "teamA" ? "Time A" : "Time B"}`);
-        setIsEditWinnerOpen(false); // Close winner edit popup
-    };
+    // Verificar se o usuário é admin
+    const isAdmin = user?.user?.name === "admin";
 
-    const handleAddGame = () => {
-        console.log("Jogo adicionado ou editado:", newGame);
-        setIsSidebarOpen(false);
-    };
-
-    const { user } = useUserStorage();
-    
     if (!user) {
         return <div>Carregando...</div>;
     }
-
-    const isAdmin = user.user.name === "admin"; // Only show buttons for 'admin'
 
     return (
         <>
@@ -89,7 +127,7 @@ export const GamesPage = () => {
                             <Button onClick={() => setIsSidebarOpen(true)}>Adicionar Jogo</Button>
                         )}
                     </div>
-                    {mockGames.map((game, index) => (
+                    {games.map((game) => (
                         <div key={game.id}>
                             <div className="flex justify-between items-center py-3">
                                 <div className="flex gap-6 font-extrabold text-lg">
@@ -101,7 +139,7 @@ export const GamesPage = () => {
                                 </div>
                                 <div className="flex gap-2">
                                     {user.user && (
-                                        <Button variant="default" onClick={() => handleBet()}>Apostar</Button>
+                                        <Button variant="default" onClick={handleBet}>Apostar</Button>
                                     )}
                                 </div>
                             </div>
@@ -151,7 +189,7 @@ export const GamesPage = () => {
             )}
 
             {/* Pop-up de Identificação do Vencedor */}
-            {isEditWinnerOpen && (
+            {isEditWinnerOpen && selectedGame && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-80">
                         <h2 className="text-xl font-bold mb-4">Identificar o Vencedor</h2>
@@ -189,8 +227,11 @@ export const GamesPage = () => {
                 </div>
             )}
 
+            {/* Drawer de Autenticação e Pagamento */}
             <AuthDrawer isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
             <PaymentDrawer isOpen={isPaymentOpen} onClose={() => setPaymentOpen(false)} />
+
+            {/* Sidebar para Adicionar Jogo */}
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
                 <SheetContent side="right">
                     <SheetHeader>
