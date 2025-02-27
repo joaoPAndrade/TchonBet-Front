@@ -42,9 +42,9 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
     }
 
     try {
-      await UserService.addWallet(user.user.id, parseFloat(formData.value)); // Converte o valor para número
-      updateWallet(parseFloat(formData.value))
-      setMessage("Fundos adicionados com sucesso!");// Atualiza o usuário no contexto
+      const updatedUser = await UserService.addWallet(user.user.id, parseFloat(formData.value));
+      updateWallet(updatedUser.wallet); // Atualiza o usuário no contexto
+      setMessage("Fundos adicionados com sucesso!");
       onClose(); // Fecha o drawer após o sucesso
     } catch (error: any) {
       setMessage(error.message || "Erro ao adicionar fundos.");
