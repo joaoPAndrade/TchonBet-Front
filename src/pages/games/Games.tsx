@@ -115,7 +115,6 @@ export const GamesPage = () => {
         try {
             // Montar o objeto Bet
             const newBet: Bet = {
-                id: 0, // O ID será gerado pelo backend
                 idUser: user.user.id,
                 idGame: selectedGame.id,
                 amount: betAmount,

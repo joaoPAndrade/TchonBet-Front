@@ -1,6 +1,6 @@
 // models/Bet.ts
 export interface Bet {
-    id: number;
+    id?: number;
     idUser: number;
     idGame: number;
     amount: number;
