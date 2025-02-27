@@ -24,7 +24,7 @@ class UserService {
 
     async authenticateUser(username: string, password: string) {
         try {
-            const response = await axios.post(`${API_URL}/auth/login`, { username, password });
+            const response = await axios.post(`http://localhost:3000/auth/login`, { username, password });
             return response.data;
         } catch (error: any) {
             throw new Error(error.response?.data?.message || "Erro ao autenticar usuário");
