@@ -59,9 +59,14 @@ export const Navbar = ({ onOpenLogin, onOpenPayment }: NavbarProps) => {
             {/* Exibe o Wallet apenas se o usuário estiver logado */}
             {user && <Wallet onOpenPayment={() => onOpenPayment()} />}
 
-            <button onClick={onOpenLogin} className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default", })}`}>
-              Login
-            </button>
+            {!user && (
+              <button
+                onClick={onOpenLogin}
+                className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default" })}`}
+              >
+                Login
+              </button>
+            )}
 
             <ModeToggle />
           </div>
