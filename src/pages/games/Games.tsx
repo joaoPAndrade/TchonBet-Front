@@ -29,7 +29,7 @@ export const GamesPage = () => {
     const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
     // Estado para adicionar/editar jogos
-    const [newGame, setNewGame] = useState({ teamA: "", teamB: "", oddA: "", oddB: "", date: "" });
+    const [newGame, setNewGame] = useState({ teamA: "", teamB: "", oddA: 0.0, oddB: 0.0, date: "" });
 
     // Estado para armazenar a lista de jogos
     const [games, setGames] = useState<Game[]>([]);
@@ -62,7 +62,7 @@ export const GamesPage = () => {
             const game = await GameService.createGame(newGame);
             setGames([...games, game]);
             setIsSidebarOpen(false);
-            setNewGame({ teamA: "", teamB: "", oddA: "", oddB: "", date: "" }); // Limpar o formulário
+            setNewGame({ teamA: "", teamB: "", oddA: 0.0, oddB: 0.0, date: "" }); // Limpar o formulário
         } catch (error) {
             console.error("Erro ao adicionar jogo:", error);
         }
