@@ -1,10 +1,10 @@
 import axios from "axios";
 import { Game } from "src/models/GameModel";
 
-const API_URL = "http://localhost:3000/api/games";
+const API_URL = "http://localhost:3000/games";
 
 class GameService {
-    async createGame(game: Game) {
+    async createGame(game: any) {
         try {
             const response = await axios.post(`${API_URL}/create`, game);
             return response.data;
@@ -13,9 +13,9 @@ class GameService {
         }
     }
 
-    async updateGame(game: Game) {
+    async updateGameStatus(gameId: number, team: string) {
         try {
-            const response = await axios.put(`${API_URL}/update/${game.id}`, game);
+            const response = await axios.put(`${API_URL}/finish/${gameId}`, team);
             return response.data;
         } catch (error: any) {
             throw new Error(error.response?.data?.message || "Erro ao atualizar um jogo");
