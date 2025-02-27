@@ -59,9 +59,14 @@ export const Navbar = ({ onOpenLogin, onOpenPayment }: NavbarProps) => {
             {/* Exibe o Wallet apenas se o usuário estiver logado */}
             {user && <Wallet onOpenPayment={() => onOpenPayment()} />}
 
-            <button onClick={onOpenLogin} className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default", })}`}>
-              Login
-            </button>
+            {!user && (
+              <button
+                onClick={onOpenLogin}
+                className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default" })}`}
+              >
+                Login
+              </button>
+            )}
 
             <ModeToggle />
           </div>
@@ -87,15 +92,20 @@ export const Navbar = ({ onOpenLogin, onOpenPayment }: NavbarProps) => {
 
                 <nav className="flex flex-col justify-center items-center gap-4 mt-4">
                   <a href="/apostar" className="text-lg font-medium">Apostar</a>
-                  {user &&  <a href="/minhas-apostas" className="text-lg font-medium">Minhas Apostas</a>}
+                  {user && <a href="/minhas-apostas" className="text-lg font-medium">Minhas Apostas</a>}
                   {user && <a href="/perfil" className="text-lg font-medium">Perfil</a>}
 
                   {/* Exibe o Wallet apenas se o usuário estiver logado */}
                   {user && <Wallet onOpenPayment={() => onOpenPayment()} />}
 
-                  <button onClick={onOpenLogin} className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default", })}`}>
-                    Login
-                  </button>
+                  {!user && (
+                    <button
+                      onClick={onOpenLogin}
+                      className={`border px-4 py-2 rounded-md ${buttonVariants({ variant: "default" })}`}
+                    >
+                      Login
+                    </button>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>

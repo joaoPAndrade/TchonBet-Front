@@ -110,7 +110,7 @@ export const GamesPage = () => {
 
     // Função para confirmar a aposta
     const handleConfirmBet = async () => {
-        if (selectedBet === "none" || !selectedGame || !user?.user?.id) {
+        if (selectedBet === "none" || !selectedGame || !user?.id) {
             toast.error("Selecione um time para apostar e insira um valor!");
             return;
         }
@@ -122,7 +122,7 @@ export const GamesPage = () => {
 
         try {
             const newBet: Bet = {
-                idUser: user.user.id,
+                idUser: user.id,
                 idGame: selectedGame.id,
                 amount: betAmount,
                 date: new Date().toISOString().split("T")[0],
@@ -145,7 +145,7 @@ export const GamesPage = () => {
     };
 
     // Verificar se o usuário é admin
-    const isAdmin = user?.user?.name === "admin";
+    const isAdmin = user?.name === "admin";
 
     if (!user) {
         return <div>Carregando...</div>;
@@ -176,7 +176,7 @@ export const GamesPage = () => {
                                     <span className="text-red-500">🔥 {game.oddB}x</span> {game.teamB}
                                 </div>
                                 <div className="flex gap-2">
-                                    {!isAdmin && user.user && (
+                                    {!isAdmin && user && (
                                         <Button variant="default" onClick={() => handleBet(game)}>Apostar</Button>
                                     )}
                                 </div>

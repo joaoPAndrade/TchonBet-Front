@@ -28,13 +28,13 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
       return;
     }
 
-    if (!user?.user?.id) {
+    if (!user?.id) {
       toast.error("Usuário não autenticado.");
       return;
     }
 
     try {
-      const updatedUser = await UserService.addWallet(user.user.id, parseFloat(formData.value));
+      const updatedUser = await UserService.addWallet(user.id, parseFloat(formData.value));
       updateWallet(updatedUser.wallet);
       toast.success("Fundos adicionados com sucesso!");
       onClose();

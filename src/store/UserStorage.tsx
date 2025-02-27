@@ -3,8 +3,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { User } from "src/models/UserModel";
 
 interface UserStorageContextType {
-  user: any | null;
+  user: User | null;
   login: (userData: User) => void;
+  updateUser: (userData: User) => void;
   logout: () => void;
   updateWallet: (newWallet: number) => void;
 }
@@ -17,7 +18,9 @@ export const UserStorageProvider = ({ children }: { children: React.ReactNode })
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      // Se o objeto estiver aninhado, extrai a parte interna
+      setUser(parsedUser.user ? parsedUser.user : parsedUser);
     }
   }, []);
 
@@ -31,6 +34,11 @@ export const UserStorageProvider = ({ children }: { children: React.ReactNode })
     setUser(null);
   };
 
+  const updateUser = (userData: User) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+  };
+
   const updateWallet = (newWallet: number) => {
     if (user) {
       const updatedUser = { ...user, wallet: newWallet };
@@ -40,7 +48,7 @@ export const UserStorageProvider = ({ children }: { children: React.ReactNode })
   };
 
   return (
-    <UserStorageContext.Provider value={{ user, login, logout, updateWallet}}>
+    <UserStorageContext.Provider value={{ user, login, logout, updateWallet, updateUser }}>
       {children}
     </UserStorageContext.Provider>
   );
