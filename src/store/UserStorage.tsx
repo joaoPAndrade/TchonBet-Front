@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { User } from "src/models/UserModel";
 
 interface UserStorageContextType {
-  user: User | null;
+  user: any | null;
   login: (userData: User) => void;
   logout: () => void;
 }

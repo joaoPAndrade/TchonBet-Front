@@ -12,6 +12,7 @@ export const UserPage = () => {
   // Acessa o usuário do contexto
   const { user, logout } = useUserStorage();
 
+
   if (!user) {
     return <div>Carregando...</div>; // Ou redireciona para a página de login
   }
@@ -23,10 +24,10 @@ export const UserPage = () => {
         <h1 className="text-3xl font-bold mb-4">Perfil</h1>
         <div className="border rounded-lg p-4">
           <p>
-            <strong>Nome:</strong> {user.name}
+            <strong>Nome:</strong> {user.user.name}
           </p>
           <p>
-            <strong>Email:</strong> {user.email}
+            <strong>Email:</strong> {user.user.email}
           </p>
         </div>
         <div className="mt-4 flex gap-4">
