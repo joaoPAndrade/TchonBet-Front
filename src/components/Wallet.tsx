@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Coins, Wallet as WalletIcon } from "lucide-react";
 import { buttonVariants } from "./ui/button";
 import { useUserStorage } from "@/store/UserStorage";
@@ -7,18 +7,12 @@ interface WalletProps {
     onOpenPayment: () => void;
 }
 
+
 const Wallet = ({ onOpenPayment }: WalletProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const { user } = useUserStorage(); 
-    const [saldo, setSaldo] = useState(user?.user?.wallet || 0); // Garante que saldo inicie com 0 caso user seja undefined
-
-    // Atualiza o saldo sempre que o usuário mudar (mas só se `user` existir)
-    useEffect(() => {
-        if (user && user.user && typeof user.user.wallet === "number") {
-            setSaldo(user.user.wallet);
-        }
-    }, [user]); 
-
+    const saldo = user.user.wallet;
+    
     return (
         <div className="relative">
             <button
