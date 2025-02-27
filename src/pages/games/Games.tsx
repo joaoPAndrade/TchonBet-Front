@@ -13,6 +13,7 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { useUserStorage } from "@/store/UserStorage";
 
 const mockGames: Game[] = [
     { id: 1, teamA: "Time A", teamB: "Time B", oddA: 2.0, oddB: 4.5, date: "2025-03-01", isFinished: false, winnerTeam: "false" },
@@ -66,10 +67,13 @@ export const GamesPage = () => {
         setIsSidebarOpen(false);
     };
 
-    // Check user role from localStorage
-    const userName = localStorage.getItem("userName");
-    const hasUser = (userName !== null);
-    const isAdmin = userName === "admin"; // Only show buttons for 'admin'
+    const { user } = useUserStorage();
+    
+    if (!user) {
+        return <div>Carregando...</div>;
+    }
+
+    const isAdmin = user.user.name === "admin"; // Only show buttons for 'admin'
 
     return (
         <>
@@ -96,7 +100,7 @@ export const GamesPage = () => {
                                     <span className="text-red-500">🔥 {game.oddB}x</span> {game.teamB}
                                 </div>
                                 <div className="flex gap-2">
-                                    {hasUser && (
+                                    {user.user && (
                                         <Button variant="default" onClick={() => handleBet()}>Apostar</Button>
                                     )}
                                 </div>
