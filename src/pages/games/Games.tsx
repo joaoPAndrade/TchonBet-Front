@@ -29,7 +29,7 @@ export const GamesPage = () => {
     const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
     // Estado para adicionar/editar jogos
-    const [newGame, setNewGame] = useState({ teamA: "", teamB: "", oddA: "", oddB: "", data: "" });
+    const [newGame, setNewGame] = useState({ teamA: "", teamB: "", oddA: "", oddB: "", date: "" });
 
     // Estado para armazenar a lista de jogos
     const [games, setGames] = useState<Game[]>([]);
@@ -62,7 +62,7 @@ export const GamesPage = () => {
             const game = await GameService.createGame(newGame);
             setGames([...games, game]);
             setIsSidebarOpen(false);
-            setNewGame({ teamA: "", teamB: "", oddA: "", oddB: "", data: "" }); // Limpar o formulário
+            setNewGame({ teamA: "", teamB: "", oddA: "", oddB: "", date: "" }); // Limpar o formulário
         } catch (error) {
             console.error("Erro ao adicionar jogo:", error);
         }
@@ -242,7 +242,7 @@ export const GamesPage = () => {
                         <Input name="teamB" placeholder="Time B" value={newGame.teamB} onChange={handleChange} />
                         <Input name="oddA" placeholder="Odd Time A" value={newGame.oddA} onChange={handleChange} />
                         <Input name="oddB" placeholder="Odd Time B" value={newGame.oddB} onChange={handleChange} />
-                        <Input name="data" placeholder="Data" type="date" value={newGame.data} onChange={handleChange} />
+                        <Input name="date" placeholder="Data" type="date" value={newGame.date} onChange={handleChange} />
                         <Button className="w-full mt-2" onClick={handleAddGame}>Adicionar</Button>
                     </div>
                 </SheetContent>
