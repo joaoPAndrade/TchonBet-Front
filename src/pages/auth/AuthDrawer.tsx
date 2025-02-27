@@ -48,11 +48,11 @@ export const AuthDrawer = ({ isOpen, onClose }: AuthDrawerProps) => {
   const handleLogin = async () => {
     try {
       // Verifica se os campos obrigatórios foram preenchidos
-      if (!formData.email || !formData.password) {
-        setMessage("Preencha os campos de email e senha!");
+      if (!formData.cpf || !formData.password) {
+        setMessage("Preencha os campos de cpf e senha!");
         return;
       }
-      const user = await UserService.authenticateUser(formData.email, formData.password);
+      const user = await UserService.authenticateUser(formData.cpf, formData.password);
       login(user); // Salva as informações do usuário no storage via contexto
       setMessage("Login realizado com sucesso!");
     } catch (error: any) {
@@ -81,8 +81,8 @@ export const AuthDrawer = ({ isOpen, onClose }: AuthDrawerProps) => {
         </SheetHeader>
         <div className="mt-4 space-y-3">
           {isRegister && <Input name="name" placeholder="Nome" value={formData.name} onChange={handleChange} />}
-          <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-          {isRegister && <Input name="cpf" placeholder="CPF" value={formData.cpf} onChange={handleChange} />}
+          {isRegister && <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange} />}
+          <Input name="cpf" placeholder="CPF" value={formData.cpf} onChange={handleChange} />
           {isRegister && <Input name="birthdate" placeholder="Data de Nascimento" type="date" value={formData.birthdate} onChange={handleChange} />}
           <Input name="password" placeholder="Senha" type="password" value={formData.password} onChange={handleChange} />
           {isRegister && <Input name="confirmPassword" placeholder="Confirme a senha" type="password" onChange={handleChange} />}
