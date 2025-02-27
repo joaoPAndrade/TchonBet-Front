@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import {
   Sheet,
   SheetContent,
@@ -27,7 +28,6 @@ export const AuthDrawer = ({ isOpen, onClose }: AuthDrawerProps) => {
     password: "",
     wallet: 0,
   });
-  const [message, setMessage] = useState("");
 
   const { login } = useUserStorage(); // Utilizando o login do contexto
 
@@ -38,25 +38,25 @@ export const AuthDrawer = ({ isOpen, onClose }: AuthDrawerProps) => {
   const handleRegister = async () => {
     try {
       await UserService.createUser(formData as User);
-      setMessage("Usuário criado com sucesso!");
+      toast.success("Usuário criado com sucesso!");
       setFormData({ name: "", email: "", cpf: "", birthdate: "", password: "", wallet: 0 });
     } catch (error: any) {
-      setMessage(error.message);
+      toast.error(error.message);
     }
   };
 
   const handleLogin = async () => {
     try {
-      // Verifica se os campos obrigatórios foram preenchidos
       if (!formData.cpf || !formData.password) {
-        setMessage("Preencha os campos de cpf e senha!");
+        toast.warn("Preencha os campos de CPF e senha!");
         return;
       }
       const user = await UserService.authenticateUser(formData.cpf, formData.password);
-      login(user); // Salva as informações do usuário no storage via contexto
-      setMessage("Login realizado com sucesso!");
+      login(user);
+      toast.success("Login realizado com sucesso!");
+      onClose();
     } catch (error: any) {
-      setMessage(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -89,7 +89,6 @@ export const AuthDrawer = ({ isOpen, onClose }: AuthDrawerProps) => {
           <Button className="w-full mt-2" onClick={isRegister ? handleRegister : handleLogin}>
             {isRegister ? "Cadastrar" : "Entrar"}
           </Button>
-          {message && <p className="text-sm text-green-500">{message}</p>}
           <button className="text-sm text-pink-500 w-full" onClick={toggleRegister}>
             {isRegister ? "Já tem uma conta? Faça login" : "Criar uma conta"}
           </button>

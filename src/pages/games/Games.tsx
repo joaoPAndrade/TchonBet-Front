@@ -16,6 +16,9 @@ import { useUserStorage } from "@/store/UserStorage";
 import GameService from "@/services/GameService";
 import BetService from "@/services/BetService"; // Importe o BetService
 import { Bet } from "@/models/BetModel"; // Importe o modelo Bet
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export const GamesPage = () => {
     // Estados para controle de UI
@@ -64,12 +67,15 @@ export const GamesPage = () => {
         try {
             const game = await GameService.createGame(newGame);
             setGames([...games, game]);
+            setNewGame({ teamA: "", teamB: "", oddA: 0.0, oddB: 0.0, date: "" });
+            toast.success("Jogo adicionado com sucesso!");
             setIsSidebarOpen(false);
-            setNewGame({ teamA: "", teamB: "", oddA: 0.0, oddB: 0.0, date: "" }); // Limpar o formulário
         } catch (error) {
             console.error("Erro ao adicionar jogo:", error);
+            toast.error("Erro ao adicionar jogo. Tente novamente.");
         }
     };
+
 
     // Função para abrir o pop-up de edição de vencedor
     const handleEditWinner = (game: Game) => {
@@ -81,7 +87,7 @@ export const GamesPage = () => {
     // Função para confirmar o vencedor
     const handleConfirmWinner = async () => {
         if (selectedWinner === "none" || !selectedGame) {
-            alert("Selecione um time vencedor!");
+            toast.error("Selecione um time vencedor!");
             return;
         }
 
@@ -89,8 +95,10 @@ export const GamesPage = () => {
             const updatedGame = await GameService.updateGameStatus(selectedGame.id, selectedWinner);
             setGames(games.map(g => g.id === updatedGame.id ? updatedGame : g));
             setIsEditWinnerOpen(false);
+            toast.success("Vencedor atualizado com sucesso!");
         } catch (error) {
             console.error("Erro ao atualizar o vencedor:", error);
+            toast.error("Erro ao atualizar o vencedor. Tente novamente.");
         }
     };
 
@@ -103,39 +111,36 @@ export const GamesPage = () => {
     // Função para confirmar a aposta
     const handleConfirmBet = async () => {
         if (selectedBet === "none" || !selectedGame || !user?.user?.id) {
-            alert("Selecione um time para apostar e insira um valor!");
+            toast.error("Selecione um time para apostar e insira um valor!");
             return;
         }
 
         if (betAmount <= 0) {
-            alert("O valor da aposta deve ser maior que zero!");
+            toast.error("O valor da aposta deve ser maior que zero!");
             return;
         }
 
         try {
-            // Montar o objeto Bet
             const newBet: Bet = {
                 idUser: user.user.id,
                 idGame: selectedGame.id,
                 amount: betAmount,
-                date: new Date().toISOString().split("T")[0], // Data atual no formato YYYY-MM-DD
-                time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }), // Hora atual no formato HH:MM// Hora atual no formato HH:MM
-                status: "waiting", // Status inicial
-                team: selectedBet === "teamA" ? selectedGame.teamA : selectedGame.teamB, // Nome do time apostado
-                betOdd: selectedBet === "teamA" ? selectedGame.oddA : selectedGame.oddB, // Odd do time apostado
+                date: new Date().toISOString().split("T")[0],
+                time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+                status: "waiting",
+                team: selectedBet === "teamA" ? selectedGame.teamA : selectedGame.teamB,
+                betOdd: selectedBet === "teamA" ? selectedGame.oddA : selectedGame.oddB,
             };
 
-            // Enviar a aposta para o backend
             await BetService.createBet(newBet);
 
-            // Feedback ao usuário
-            alert("Aposta realizada com sucesso!");
-            setIsBettingOpen(false); // Fechar o pop-up
-            setSelectedBet("none"); // Resetar a seleção
-            setBetAmount(0); // Resetar o valor da aposta
+            toast.success("Aposta realizada com sucesso!");
+            setIsBettingOpen(false);
+            setSelectedBet("none");
+            setBetAmount(0);
         } catch (error) {
             console.error("Erro ao realizar aposta:", error);
-            alert("Erro ao realizar aposta. Tente novamente.");
+            toast.error("Erro ao realizar aposta. Tente novamente.");
         }
     };
 

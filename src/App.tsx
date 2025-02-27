@@ -4,11 +4,14 @@ import { UserPage } from "./pages/user/User";
 import { GamesPage } from "./pages/games/Games";
 import { UserBets } from "./pages/games/UserBets";
 import { UserStorageProvider } from "./store/UserStorage";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 function App() {
   return (
     <UserStorageProvider>
+      <ToastContainer />
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />

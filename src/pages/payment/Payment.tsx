@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -13,85 +14,57 @@ interface PaymentDrawerProps {
 
 export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card" | null>(null);
-  const [formData, setFormData] = useState({
-    value: "",
-  });
-  const [message, setMessage] = useState<string | null>(null); // Estado para feedback ao usuário
-
+  const [formData, setFormData] = useState({ value: "" });
   const { user, updateWallet } = useUserStorage();
 
-  // Função para atualizar o estado do formulário
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
-  // Função para adicionar fundos
   const handleAddFunds = async () => {
     if (!formData.value) {
-      setMessage("Por favor, insira um valor.");
+      toast.warn("Por favor, insira um valor.");
       return;
     }
 
     if (!user?.user?.id) {
-      setMessage("Usuário não autenticado.");
+      toast.error("Usuário não autenticado.");
       return;
     }
 
     try {
       const updatedUser = await UserService.addWallet(user.user.id, parseFloat(formData.value));
-      updateWallet(updatedUser.wallet); // Atualiza o usuário no contexto
-      setMessage("Fundos adicionados com sucesso!");
-      onClose(); // Fecha o drawer após o sucesso
+      updateWallet(updatedUser.wallet);
+      toast.success("Fundos adicionados com sucesso!");
+      onClose();
     } catch (error: any) {
-      setMessage(error.message || "Erro ao adicionar fundos.");
+      toast.error(error.message || "Erro ao adicionar fundos.");
     }
   };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="right">
-        <img
-          src={tchonBet}
-          alt="Tchon Bet"
-          className="w-70 h-50 object-cover rounded-l-xl"
-        />
+        <img src={tchonBet} alt="Tchon Bet" className="w-70 h-50 object-cover rounded-l-xl" />
         <br />
         <SheetHeader>
           <SheetTitle>Adicionar Fundos</SheetTitle>
         </SheetHeader>
 
-        {/* Seletor de Método de Pagamento */}
         <div className="mt-4 space-y-3">
           <p className="text-gray-700 dark:text-gray-300">Escolha um método de pagamento:</p>
           <div className="flex gap-4">
-            <Button
-              className={`w-1/2 ${paymentMethod === "pix" ? "bg-blue-500" : "bg-gray-300"}`}
-              onClick={() => setPaymentMethod("pix")}
-            >
+            <Button className={`w-1/2 ${paymentMethod === "pix" ? "bg-blue-500" : "bg-gray-300"}`} onClick={() => setPaymentMethod("pix")}>
               Pix
             </Button>
-            <Button
-              className={`w-1/2 ${paymentMethod === "card" ? "bg-blue-500" : "bg-gray-300"}`}
-              onClick={() => setPaymentMethod("card")}
-            >
+            <Button className={`w-1/2 ${paymentMethod === "card" ? "bg-blue-500" : "bg-gray-300"}`} onClick={() => setPaymentMethod("card")}>
               Cartão
             </Button>
           </div>
 
-          {/* Formulário Base */}
-          <Input
-            placeholder="Valor R$"
-            name="value"
-            value={formData.value}
-            onChange={handleInputChange}
-            type="number" // Garante que apenas números sejam digitados
-          />
+          <Input placeholder="Valor R$" name="value" value={formData.value} onChange={handleInputChange} type="number" />
 
-          {/* Formulário específico para Pix */}
           {paymentMethod === "pix" && (
             <div className="space-y-3">
               <p className="text-gray-700 dark:text-gray-300">Dados para pagamento via Pix:</p>
@@ -99,7 +72,6 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
             </div>
           )}
 
-          {/* Formulário específico para Cartão */}
           {paymentMethod === "card" && (
             <div className="space-y-3">
               <p className="text-gray-700 dark:text-gray-300">Dados do cartão:</p>
@@ -112,17 +84,9 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
             </div>
           )}
 
-          {/* Botão de Finalizar Pagamento */}
           <Button className="w-full mt-4" disabled={!paymentMethod} onClick={handleAddFunds}>
             Confirmar Pagamento
           </Button>
-
-          {/* Feedback para o usuário */}
-          {message && (
-            <p className={`mt-4 text-sm ${message.includes("sucesso") ? "text-green-500" : "text-red-500"}`}>
-              {message}
-            </p>
-          )}
         </div>
       </SheetContent>
     </Sheet>
