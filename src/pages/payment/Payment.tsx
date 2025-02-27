@@ -1,12 +1,9 @@
-import { useState } from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useUserStorage } from "@/store/UserStorage";
+import UserService from "@/services/UserService";
 import tchonBet from "@/components/images/tchonBetDinheiro.png";
 
 interface PaymentDrawerProps {
@@ -16,6 +13,42 @@ interface PaymentDrawerProps {
 
 export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "card" | null>(null);
+  const [formData, setFormData] = useState({
+    value: "",
+  });
+  const [message, setMessage] = useState<string | null>(null); // Estado para feedback ao usuário
+
+  const { user } = useUserStorage();
+
+  // Função para atualizar o estado do formulário
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // Função para adicionar fundos
+  const handleAddFunds = async () => {
+    if (!formData.value) {
+      setMessage("Por favor, insira um valor.");
+      return;
+    }
+
+    if (!user?.user?.id) {
+      setMessage("Usuário não autenticado.");
+      return;
+    }
+
+    try {
+      await UserService.addWallet(user.user.id, parseFloat(formData.value)); // Converte o valor para número
+      setMessage("Fundos adicionados com sucesso!");
+      onClose(); // Fecha o drawer após o sucesso
+    } catch (error: any) {
+      setMessage(error.message || "Erro ao adicionar fundos.");
+    }
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -25,7 +58,7 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
           alt="Tchon Bet"
           className="w-70 h-50 object-cover rounded-l-xl"
         />
-        <br></br>
+        <br />
         <SheetHeader>
           <SheetTitle>Adicionar Fundos</SheetTitle>
         </SheetHeader>
@@ -49,7 +82,13 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
           </div>
 
           {/* Formulário Base */}
-          <Input placeholder="Valor R$" />
+          <Input
+            placeholder="Valor R$"
+            name="value"
+            value={formData.value}
+            onChange={handleInputChange}
+            type="number" // Garante que apenas números sejam digitados
+          />
 
           {/* Formulário específico para Pix */}
           {paymentMethod === "pix" && (
@@ -73,9 +112,16 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
           )}
 
           {/* Botão de Finalizar Pagamento */}
-          <Button className="w-full mt-4" disabled={!paymentMethod}>
+          <Button className="w-full mt-4" disabled={!paymentMethod} onClick={handleAddFunds}>
             Confirmar Pagamento
           </Button>
+
+          {/* Feedback para o usuário */}
+          {message && (
+            <p className={`mt-4 text-sm ${message.includes("sucesso") ? "text-green-500" : "text-red-500"}`}>
+              {message}
+            </p>
+          )}
         </div>
       </SheetContent>
     </Sheet>
