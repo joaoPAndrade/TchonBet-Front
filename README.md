@@ -28,8 +28,6 @@ Inicie o ambiente de desenvolvimento com o comando:
 
 Neste projeto, adotamos o padrão de Fachada para simplificar e abstrair as camadas internas do software. Em arquiteturas tradicionais, a divisão de responsabilidades ocorre da seguinte forma:
 
-- Repository: Responsável pelo acesso direto ao banco de dados.
-
 - Service: Gerencia a lógica de negócio e invoca os métodos dos repositórios.
 
 Na nossa abordagem, essas funções foram unificadas em uma única camada. Ou seja, ao chamar o service, ele é responsável tanto por processar a lógica de negócio quanto por acessar os dados no banco. Essa integração resulta em:
