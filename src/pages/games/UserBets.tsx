@@ -40,9 +40,9 @@ export const UserBets = () => {
   // Buscar as apostas do usuário ao carregar a página
   useEffect(() => {
     const fetchUserBets = async () => {
-      if (user?.user?.id) {
+      if (user?.id) {
         try {
-          const bets = await BetService.getBetsByIdUser(user.user.id); // Busca as apostas do usuário
+          const bets = await BetService.getBetsByIdUser(user.id); // Busca as apostas do usuário
           setUserBets(bets); // Atualiza o estado com as apostas
         } catch (error) {
           console.error("Erro ao buscar apostas:", error);
@@ -51,7 +51,7 @@ export const UserBets = () => {
     };
 
     fetchUserBets();
-  }, [user?.user?.id]); // Executa sempre que o ID do usuário mudar
+  }, [user?.id]); // Executa sempre que o ID do usuário mudar
 
   return (
     <>

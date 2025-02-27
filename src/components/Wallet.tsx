@@ -10,11 +10,11 @@ interface WalletProps {
 const Wallet = ({ onOpenPayment }: WalletProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const { user } = useUserStorage(); 
-    const [saldo, setSaldo] = useState(user.user.wallet); // Estado para atualizar saldo
+    const [saldo, setSaldo] = useState(user!.wallet); // Estado para atualizar saldo
 
     // Atualiza o saldo sempre que o usuário mudar
     useEffect(() => {
-        setSaldo(user.user.wallet);
+        setSaldo(user!.wallet);
     }, [user]); 
 
     return (
