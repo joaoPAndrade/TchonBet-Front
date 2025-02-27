@@ -18,7 +18,7 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
   });
   const [message, setMessage] = useState<string | null>(null); // Estado para feedback ao usuário
 
-  const { user } = useUserStorage();
+  const { user, updateWallet } = useUserStorage();
 
   // Função para atualizar o estado do formulário
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +43,8 @@ export const PaymentDrawer = ({ isOpen, onClose }: PaymentDrawerProps) => {
 
     try {
       await UserService.addWallet(user.user.id, parseFloat(formData.value)); // Converte o valor para número
-      setMessage("Fundos adicionados com sucesso!");
+      updateWallet(parseFloat(formData.value))
+      setMessage("Fundos adicionados com sucesso!");// Atualiza o usuário no contexto
       onClose(); // Fecha o drawer após o sucesso
     } catch (error: any) {
       setMessage(error.message || "Erro ao adicionar fundos.");
