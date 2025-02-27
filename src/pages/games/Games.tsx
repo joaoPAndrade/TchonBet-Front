@@ -14,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useUserStorage } from "@/store/UserStorage";
 import GameService from "@/services/GameService";
+import BetService from "@/services/BetService"; // Importe o BetService
+import { Bet } from "@/models/BetModel"; // Importe o modelo Bet
 
 export const GamesPage = () => {
     // Estados para controle de UI
@@ -27,6 +29,7 @@ export const GamesPage = () => {
     const [selectedBet, setSelectedBet] = useState<"teamA" | "teamB" | "none">("none");
     const [selectedWinner, setSelectedWinner] = useState<"teamA" | "teamB" | "none">("none");
     const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+    const [betAmount, setBetAmount] = useState<number>(0); // Estado para o valor da aposta
 
     // Estado para adicionar/editar jogos
     const [newGame, setNewGame] = useState({ teamA: "", teamB: "", oddA: 0.0, oddB: 0.0, date: "" });
@@ -92,18 +95,49 @@ export const GamesPage = () => {
     };
 
     // Função para lidar com a aposta
-    const handleBet = () => {
-        setIsBettingOpen(true);
+    const handleBet = (game: Game) => {
+        setSelectedGame(game); // Define o jogo selecionado
+        setIsBettingOpen(true); // Abre o pop-up de aposta
     };
 
     // Função para confirmar a aposta
-    const handleConfirmBet = () => {
-        if (selectedBet === "none") {
-            alert("Selecione um time para apostar!");
+    const handleConfirmBet = async () => {
+        if (selectedBet === "none" || !selectedGame || !user?.user?.id) {
+            alert("Selecione um time para apostar e insira um valor!");
             return;
         }
-        console.log(`Aposta confirmada no ${selectedBet === "teamA" ? "Time A" : "Time B"}`);
-        setIsBettingOpen(false);
+
+        if (betAmount <= 0) {
+            alert("O valor da aposta deve ser maior que zero!");
+            return;
+        }
+
+        try {
+            // Montar o objeto Bet
+            const newBet: Bet = {
+                id: 0, // O ID será gerado pelo backend
+                idUser: user.user.id,
+                idGame: selectedGame.id,
+                amount: betAmount,
+                date: new Date().toISOString().split("T")[0], // Data atual no formato YYYY-MM-DD
+                time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }), // Hora atual no formato HH:MM// Hora atual no formato HH:MM
+                status: "waiting", // Status inicial
+                team: selectedBet === "teamA" ? selectedGame.teamA : selectedGame.teamB, // Nome do time apostado
+                betOdd: selectedBet === "teamA" ? selectedGame.oddA : selectedGame.oddB, // Odd do time apostado
+            };
+
+            // Enviar a aposta para o backend
+            await BetService.createBet(newBet);
+
+            // Feedback ao usuário
+            alert("Aposta realizada com sucesso!");
+            setIsBettingOpen(false); // Fechar o pop-up
+            setSelectedBet("none"); // Resetar a seleção
+            setBetAmount(0); // Resetar o valor da aposta
+        } catch (error) {
+            console.error("Erro ao realizar aposta:", error);
+            alert("Erro ao realizar aposta. Tente novamente.");
+        }
     };
 
     // Verificar se o usuário é admin
@@ -138,8 +172,8 @@ export const GamesPage = () => {
                                     <span className="text-red-500">🔥 {game.oddB}x</span> {game.teamB}
                                 </div>
                                 <div className="flex gap-2">
-                                    {user.user && (
-                                        <Button variant="default" onClick={handleBet}>Apostar</Button>
+                                    {!isAdmin && user.user && (
+                                        <Button variant="default" onClick={() => handleBet(game)}>Apostar</Button>
                                     )}
                                 </div>
                             </div>
@@ -170,6 +204,13 @@ export const GamesPage = () => {
                                 Apostar no Time B
                             </Button>
                         </div>
+                        <Input
+                            type="number"
+                            placeholder="Valor da Aposta"
+                            value={betAmount}
+                            onChange={(e) => setBetAmount(parseFloat(e.target.value))}
+                            className="w-full mb-4"
+                        />
                         <Button
                             variant="default"
                             className="w-full mt-4"
