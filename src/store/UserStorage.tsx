@@ -6,6 +6,7 @@ interface UserStorageContextType {
   user: any | null;
   login: (userData: User) => void;
   logout: () => void;
+  updateWallet: (newWallet: number) => void;
 }
 
 const UserStorageContext = createContext<UserStorageContextType | undefined>(undefined);
@@ -30,8 +31,16 @@ export const UserStorageProvider = ({ children }: { children: React.ReactNode })
     setUser(null);
   };
 
+  const updateWallet = (newWallet: number) => {
+    if (user) {
+      const updatedUser = { ...user, wallet: newWallet };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    }
+  };
+
   return (
-    <UserStorageContext.Provider value={{ user, login, logout }}>
+    <UserStorageContext.Provider value={{ user, login, logout, updateWallet}}>
       {children}
     </UserStorageContext.Provider>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Coins, Wallet as WalletIcon } from "lucide-react";
 import { buttonVariants } from "./ui/button";
+import { useUserStorage } from "@/store/UserStorage";
 
 interface WalletProps {
     onOpenPayment: () => void;
@@ -9,8 +10,9 @@ interface WalletProps {
 
 const Wallet = ({ onOpenPayment }: WalletProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    const saldo = 100.0; // Mockado para teste
-
+    const { user } = useUserStorage(); 
+    const saldo = user.user.wallet;
+    
     return (
         <div className="relative">
             <button

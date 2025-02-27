@@ -14,6 +14,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useUserStorage } from "@/store/UserStorage";
 import GameService from "@/services/GameService";
+import BetService from "@/services/BetService"; // Importe o BetService
+import { Bet } from "@/models/BetModel"; // Importe o modelo Bet
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export const GamesPage = () => {
     // Estados para controle de UI
@@ -27,9 +32,10 @@ export const GamesPage = () => {
     const [selectedBet, setSelectedBet] = useState<"teamA" | "teamB" | "none">("none");
     const [selectedWinner, setSelectedWinner] = useState<"teamA" | "teamB" | "none">("none");
     const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+    const [betAmount, setBetAmount] = useState<number>(0); // Estado para o valor da aposta
 
     // Estado para adicionar/editar jogos
-    const [newGame, setNewGame] = useState({ teamA: "", teamB: "", oddA: "", oddB: "", data: "" });
+    const [newGame, setNewGame] = useState({ teamA: "", teamB: "", oddA: 0.0, oddB: 0.0, date: "" });
 
     // Estado para armazenar a lista de jogos
     const [games, setGames] = useState<Game[]>([]);
@@ -61,12 +67,15 @@ export const GamesPage = () => {
         try {
             const game = await GameService.createGame(newGame);
             setGames([...games, game]);
+            setNewGame({ teamA: "", teamB: "", oddA: 0.0, oddB: 0.0, date: "" });
+            toast.success("Jogo adicionado com sucesso!");
             setIsSidebarOpen(false);
-            setNewGame({ teamA: "", teamB: "", oddA: "", oddB: "", data: "" }); // Limpar o formulário
         } catch (error) {
             console.error("Erro ao adicionar jogo:", error);
+            toast.error("Erro ao adicionar jogo. Tente novamente.");
         }
     };
+
 
     // Função para abrir o pop-up de edição de vencedor
     const handleEditWinner = (game: Game) => {
@@ -78,7 +87,7 @@ export const GamesPage = () => {
     // Função para confirmar o vencedor
     const handleConfirmWinner = async () => {
         if (selectedWinner === "none" || !selectedGame) {
-            alert("Selecione um time vencedor!");
+            toast.error("Selecione um time vencedor!");
             return;
         }
 
@@ -86,24 +95,53 @@ export const GamesPage = () => {
             const updatedGame = await GameService.updateGameStatus(selectedGame.id, selectedWinner);
             setGames(games.map(g => g.id === updatedGame.id ? updatedGame : g));
             setIsEditWinnerOpen(false);
+            toast.success("Vencedor atualizado com sucesso!");
         } catch (error) {
             console.error("Erro ao atualizar o vencedor:", error);
+            toast.error("Erro ao atualizar o vencedor. Tente novamente.");
         }
     };
 
     // Função para lidar com a aposta
-    const handleBet = () => {
-        setIsBettingOpen(true);
+    const handleBet = (game: Game) => {
+        setSelectedGame(game); // Define o jogo selecionado
+        setIsBettingOpen(true); // Abre o pop-up de aposta
     };
 
     // Função para confirmar a aposta
-    const handleConfirmBet = () => {
-        if (selectedBet === "none") {
-            alert("Selecione um time para apostar!");
+    const handleConfirmBet = async () => {
+        if (selectedBet === "none" || !selectedGame || !user?.user?.id) {
+            toast.error("Selecione um time para apostar e insira um valor!");
             return;
         }
-        console.log(`Aposta confirmada no ${selectedBet === "teamA" ? "Time A" : "Time B"}`);
-        setIsBettingOpen(false);
+
+        if (betAmount <= 0) {
+            toast.error("O valor da aposta deve ser maior que zero!");
+            return;
+        }
+
+        try {
+            const newBet: Bet = {
+                idUser: user.user.id,
+                idGame: selectedGame.id,
+                amount: betAmount,
+                date: new Date().toISOString().split("T")[0],
+                time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+                status: "waiting",
+                team: selectedBet === "teamA" ? selectedGame.teamA : selectedGame.teamB,
+                betOdd: selectedBet === "teamA" ? selectedGame.oddA : selectedGame.oddB,
+            };
+
+            await BetService.createBet(newBet);
+
+            toast.success("Aposta realizada com sucesso!");
+            setIsBettingOpen(false);
+            setSelectedBet("none");
+            setBetAmount(0);
+        } catch (error) {
+            console.error("Erro ao realizar aposta:", error);
+            toast.error("Erro ao realizar aposta. Tente novamente.");
+        }
     };
 
     // Verificar se o usuário é admin
@@ -138,8 +176,8 @@ export const GamesPage = () => {
                                     <span className="text-red-500">🔥 {game.oddB}x</span> {game.teamB}
                                 </div>
                                 <div className="flex gap-2">
-                                    {user.user && (
-                                        <Button variant="default" onClick={handleBet}>Apostar</Button>
+                                    {!isAdmin && user.user && (
+                                        <Button variant="default" onClick={() => handleBet(game)}>Apostar</Button>
                                     )}
                                 </div>
                             </div>
@@ -170,6 +208,13 @@ export const GamesPage = () => {
                                 Apostar no Time B
                             </Button>
                         </div>
+                        <Input
+                            type="number"
+                            placeholder="Valor da Aposta"
+                            value={betAmount}
+                            onChange={(e) => setBetAmount(parseFloat(e.target.value))}
+                            className="w-full mb-4"
+                        />
                         <Button
                             variant="default"
                             className="w-full mt-4"
@@ -242,7 +287,7 @@ export const GamesPage = () => {
                         <Input name="teamB" placeholder="Time B" value={newGame.teamB} onChange={handleChange} />
                         <Input name="oddA" placeholder="Odd Time A" value={newGame.oddA} onChange={handleChange} />
                         <Input name="oddB" placeholder="Odd Time B" value={newGame.oddB} onChange={handleChange} />
-                        <Input name="data" placeholder="Data" type="date" value={newGame.data} onChange={handleChange} />
+                        <Input name="date" placeholder="Data" type="date" value={newGame.date} onChange={handleChange} />
                         <Button className="w-full mt-2" onClick={handleAddGame}>Adicionar</Button>
                     </div>
                 </SheetContent>

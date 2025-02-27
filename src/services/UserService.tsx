@@ -39,6 +39,16 @@ class UserService {
             throw new Error(error.response?.data?.message || "Erro ao buscar usuário");
         }
     }
+
+    async addWallet(userId: number, value: number) {
+        try {
+            const response = await axios.post(`${API_URL}/addWallet`, { userId, value });
+            return response.data;
+        } catch (error: any) {
+            throw new Error(error.response?.data?.message || "Erro ao buscar usuário");
+        }
+    }
+    
 }
 
 export default new UserService();

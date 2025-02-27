@@ -1,5 +1,6 @@
 {
   "name": "shadcn-landing-page-template",
+  "type": "module",
   "description": "Landing page template utilizing Shadcn, React, Typescript, and Tailwind CSS for rapid development and responsive design.",
   "author": {
     "name": "Leopoldo Miranda",
@@ -42,6 +43,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.2.0",
+    "react-toastify": "^11.0.5",
     "tailwind": "^4.0.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7"
